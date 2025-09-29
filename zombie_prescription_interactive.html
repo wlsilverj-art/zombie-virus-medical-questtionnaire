@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>좀비 치료제 처방전</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #333;
+        }
+        
+        .prescription-container, .result-container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 20px 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            border: 3px solid #27ae60;
+        }
+        
+        .result-container {
+            border-color: #3498db;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .prescription-header, .result-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #27ae60;
+            padding-bottom: 20px;
+        }
+        
+        .result-header {
+            border-bottom-color: #3498db;
+        }
+        
+        .prescription-header h1 {
+            color: #27ae60;
+            font-size: 2em;
+            margin: 0;
+            font-weight: 900;
+        }
+        
+        .result-header h1 {
+            color: #3498db;
+        }
+        
+        .emoji-header {
+            font-size: 3em;
+            margin: 10px 0;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 15px;
+            background: #ecf0f1;
+            border-radius: 8px;
+        }
+        
+        .info-item {
+            flex: 1;
+        }
+        
+        .info-item label {
+            font-weight: bold;
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .info-item input {
+            width: 90%;
+            padding: 8px;
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        
+        .medicine-section {
+            margin: 25px 0;
+            padding: 20px;
+            background: #f0f9f4;
+            border-radius: 10px;
+            border-left: 5px solid #27ae60;
+        }
+        
+        .result-section {
+            background: #f8f9fa;
+            border-left-color: #3498db;
+        }
+        
+        .medicine-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #27ae60;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .result-title {
+            color: #3498db;
+        }
+        
+        .medicine-subtitle {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+        
+        .medicine-input {
+            margin: 12px 0;
+        }
+        
+        .medicine-input label {
+            font-weight: bold;
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .medicine-input input,
+        .medicine-input textarea {
+            width: 95%;
+            padding: 10px;
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 0.95em;
+        }
+        
+        .medicine-input textarea {
+            min-height: 80px;
+        }
+        
+        .example-box {
+            background: #e8f8f5;
+            border-left: 3px solid #1abc9c;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+        
+        .note-section {
+            background: #fff5f5;
+            border: 2px dashed #e74c3c;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .note-section ul {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+        
+        .note-section li {
+            margin: 8px 0;
+            color: #2c3e50;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+            color: #7f8c8d;
+        }
+        
+        .dose-schedule {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px 0;
+        }
+        
+        .btn-primary {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #229954;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .medicine-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+            border-left: 4px solid #27ae60;
+        }
+        
+        .medicine-card h3 {
+            color: #27ae60;
+            margin: 0 0 10px 0;
+            font-size: 1.1em;
+        }
+        
+        .medicine-card p {
+            margin: 8px 0;
+            line-height: 1.6;
+            color: #2c3e50;
+        }
+        
+        .medicine-card strong {
+            color: #27ae60;
+        }
+        
+        .dose-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .dose-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #27ae60;
+        }
+        
+        .dose-item h4 {
+            color: #27ae60;
+            margin: 0 0 10px 0;
+            font-size: 1em;
+        }
+        
+        .dose-item p {
+            color: #2c3e50;
+            font-size: 0.9em;
+            line-height: 1.6;
+            margin: 5px 0;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .prescription-container, .result-container {
+                box-shadow: none;
+            }
+            .btn {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dose-schedule, .dose-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 처방전 폼 -->
+    <div id="prescriptionForm" class="prescription-container">
+        <div class="prescription-header">
+            <div class="emoji-header">💊💉</div>
+            <h1>좀비 치료제 처방전</h1>
+            <div class="subtitle">Zombie Virus Treatment Prescription</div>
+        </div>
+        
+        <div class="info-row">
+            <div class="info-item">
+                <label>작성자 (나의 이름)</label>
+                <input type="text" id="authorName" placeholder="이름을 입력하세요">
+            </div>
+            <div class="info-item">
+                <label>처방일</label>
+                <input type="text" value="2025.09.29" readonly>
+            </div>
+        </div>
+        
+        <div class="medicine-section">
+            <div class="medicine-title">
+                🚨 [ 즉효성 치료제 - 응급상황용 ]
+            </div>
+            <div class="medicine-subtitle">좀비화 직전, 긴급하게 투여하는 응급처치제</div>
+            
+            <div class="medicine-input">
+                <label>치료제명</label>
+                <input type="text" id="emergencyName" placeholder="응급 상황에서 나를 깨울 수 있는 행동">
+            </div>
+            
+            <div class="medicine-input">
+                <label>복용법 (언제, 어떻게 사용할지)</label>
+                <textarea id="emergencyUsage" placeholder="구체적인 복용 방법을 적어주세요"></textarea>
+            </div>
+            
+            <div class="example-box">
+                💡 <strong>처방 예시:</strong><br>
+                • 치료제: "10분 산책" → 복용법: 눈 감고 일하고 있다는 생각이 들 때, 타이머 10분 맞추고 무조건 밖으로 나간다<br>
+                • 치료제: "찬물 세수 3회" → 복용법: 모니터가 흐릿하게 보일 때, 화장실 가서 찬물로 얼굴 씻기<br>
+                • 치료제: "좋아하는 음악 1곡" → 복용법: 숨이 막힌다 싶을 때, 일단 노트북 덮고 이어폰 꽂기
+            </div>
+        </div>
+        
+        <div class="medicine-section">
+            <div class="medicine-title">
+                🌱 [ 지속성 치료제 - 일상 관리용 ]
+            </div>
+            <div class="medicine-subtitle">매일 꾸준히 복용하는 기본 치료제</div>
+            
+            <div class="dose-schedule">
+                <div class="medicine-input">
+                    <label>☀️ 아침용 (기상 후)</label>
+                    <textarea id="morningDose" placeholder="아침에 할 수 있는 작은 루틴" style="min-height: 60px;"></textarea>
+                </div>
+                
+                <div class="medicine-input">
+                    <label>🌞 점심용 (오후 시작 전)</label>
+                    <textarea id="lunchDose" placeholder="점심 시간의 짧은 리추얼" style="min-height: 60px;"></textarea>
+                </div>
+                
+                <div class="medicine-input">
+                    <label>🌙 저녁용 (하루 마무리)</label>
+                    <textarea id="eveningDose" placeholder="잠들기 전 나를 위한 시간" style="min-height: 60px;"></textarea>
+                </div>
+            </div>
+            
+            <div class="example-box">
+                💡 <strong>처방 예시:</strong><br>
+                • 아침: "기상 후 스트레칭 5분" / "창문 열고 심호흡 10회"<br>
+                • 점심: "점심 후 명상 앱 10분" / "산책하며 커피 마시기"<br>
+                • 저녁: "업무 종료 선언하기" / "잠들기 전 감사일기 3줄"
+            </div>
+        </div>
+        
+        <div class="medicine-section">
+            <div class="medicine-title">
+                💪 [ 강화 치료제 - 주간 관리용 ]
+            </div>
+            <div class="medicine-subtitle">주 1-2회 집중적으로 투여하는 강화 치료제</div>
+            
+            <div class="medicine-input">
+                <label>치료제명 (무엇을 할 것인가)</label>
+                <input type="text" id="weeklyName" placeholder="일주일에 한 번은 꼭 하고 싶은 것">
+            </div>
+            
+            <div class="medicine-input">
+                <label>투여 일정 (언제, 얼마나 자주)</label>
+                <input type="text" id="weeklySchedule" placeholder="구체적인 요일과 시간">
+            </div>
+            
+            <div class="medicine-input">
+                <label>기대 효과</label>
+                <textarea id="weeklyEffect" placeholder="이 치료제가 나에게 어떤 도움을 줄까요?"></textarea>
+            </div>
+            
+            <div class="example-box">
+                💡 <strong>처방 예시:</strong><br>
+                • "주말 디지털 디톡스" → 토요일 오전 10시-오후 2시, 핸드폰 꺼두기<br>
+                • "월 2회 친구 만남" → 격주 금요일 저녁, 대면 약속 잡기<br>
+                • "주 1회 나만의 취미 시간" → 수요일 저녁 8-10시, 그림 그리기/운동/독서
+            </div>
+        </div>
+        
+        <div class="medicine-section">
+            <div class="medicine-title">
+                🛡️ [ 예방 백신 - 재발 방지용 ]
+            </div>
+            <div class="medicine-subtitle">다시 좀비가 되지 않기 위한 예방 시스템</div>
+            
+            <div class="medicine-input">
+                <label>⛔ 경계선 설정 (절대 넘지 않을 선)</label>
+                <textarea id="boundary" placeholder="예) 밤 11시 이후 업무 금지, 주말에는 업무 메일 안 봄, 연속 3일 이상 야근 금지"></textarea>
+            </div>
+            
+            <div class="medicine-input">
+                <label>🚨 위험 신호 감지법 (언제 내가 좀비가 되려는지)</label>
+                <textarea id="warningSign" placeholder="예) 3일 연속 새벽 2시 넘어 잠, 친구 연락 안 받기 시작, 식사 2끼 이상 거름"></textarea>
+            </div>
+            
+            <div class="medicine-input">
+                <label>🆘 긴급 탈출 버튼 (한계 느낄 때 누를 버튼)</label>
+                <textarea id="emergencyButton" placeholder="예) 친한 친구에게 SOS 문자, 당일 모든 일정 취소하고 쉬기, 1박 2일 혼자 여행"></textarea>
+            </div>
+        </div>
+        
+        <div class="note-section">
+            <strong>📋 처방전 복용 수칙</strong>
+            <ul>
+                <li><strong>완벽하게 복용하지 못해도 자책 금지</strong> - 70%만 지켜도 대성공입니다</li>
+                <li><strong>가끔 좀비가 되더라도 정상</strong> - 빨리 알아차리고 치료제 복용하면 됩니다</li>
+                <li><strong>치료제 효과 없을 시</strong> - 동료 프리랜서와 상담하거나 처방 재조정</li>
+                <li><strong>처방 기간</strong> - 2025년 10월 1일 ~ 12월 31일 (93일간)</li>
+                <li><strong>재검진 권장</strong> - 한 달 후 처방전 효과 점검 및 조정</li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0; padding: 20px; background: #e8f8f5; border-radius: 10px;">
+            <div style="font-size: 1.5em; margin-bottom: 10px;">✍️</div>
+            <strong style="color: #27ae60; font-size: 1.1em;">나는 _______________</strong>
+            <p style="color: #7f8c8d; margin: 10px 0;">이 처방전을 93일간 복용할 것을 약속합니다</p>
+            <div style="margin-top: 20px; border-top: 2px solid #bdc3c7; padding-top: 15px;">
+                <input type="text" id="signature" placeholder="서명" style="width: 200px; padding: 8px; border: none; border-bottom: 2px solid #27ae60; text-align: center; font-size: 1em;">
+            </div>
+        </div>
+        
+        <button class="btn btn-primary" onclick="submitPrescription()">처방전 제출하기 →</button>
+        
+        <div class="footer">
+            <p>📍 청년유니온 프리랜서 좀비 재활 센터</p>
+            <p style="font-size: 0.9em; color: #95a5a6;">D-93, 함께 인간으로 돌아가요 🌱</p>
+        </div>
+    </div>
+
+    <!-- 결과 페이지 -->
+    <div id="resultPage" class="result-container hidden">
+        <div class="result-header">
+            <div class="emoji-header">✨💊</div>
+            <h1>나만의 치료제 처방전</h1>
+            <div class="subtitle">My Personal Treatment Plan</div>
+        </div>
+        
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 12px; margin: 25px 0; text-align: center;">
+            <h2 style="margin: 0 0 10px 0; font-size: 1.8em;" id="resultName"></h2>
+            <div style="font-size: 0.9em; opacity: 0.9;">처방일: 2025.09.29 | 치료 기간: 93일 (D-93)</div>
+        </div>
+        
+        <div class="medicine-section result-section">
+            <div class="medicine-title result-title">
+                🚨 즉효성 치료제 (응급상황용)
+            </div>
+            <div class="medicine-card">
+                <h3 id="resultEmergencyName"></h3>
+                <p><strong>복용법:</strong></p>
+                <p id="resultEmergencyUsage" style="margin-left: 15px;"></p>
+            </div>
+        </div>
+        
+        <div class="medicine-section result-section">
+            <div class="medicine-title result-title">
+                🌱 지속성 치료제 (일상 관리용)
+            </div>
+            <div class="dose-grid">
+                <div class="dose-item">
+                    <h4>☀️ 아침용</h4>
+                    <p id="resultMorning"></p>
+                </div>
+                <div class="dose-item">
+                    <h4>🌞 점심용</h4>
+                    <p id="resultLunch"></p>
+                </div>
+                <div class="dose-item">
+                    <h4>🌙 저녁용</h4>
+                    <p id="resultEvening"></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="medicine-section result-section">
+            <div class="medicine-title result-title">
+                💪 강화 치료제 (주간 관리용)
+            </div>
+            <div class="medicine-card">
+                <h3 id="resultWeeklyName"></h3>
+                <p><strong>투여 일정:</strong> <span id="resultWeeklySchedule"></span></p>
+                <p><strong>기대 효과:</strong></p>
+                <p id="resultWeeklyEffect" style="margin-left: 15px;"></p>
+            </div>
+        </div>
+        
+        <div class="medicine-section result-section">
+            <div class="medicine-title result-title">
+                🛡️ 예방 백신 (재발 방지용)
+            </div>
+            <div class="medicine-card">
+                <p><strong>⛔ 경계선:</strong></p>
+                <p id="resultBoundary" style="margin-left: 15px; margin-bottom: 15px;"></p>
+                
+                <p><strong>🚨 위험 신호:</strong></p>
+                <p id="resultWarning" style="margin-left: 15px; margin-bottom: 15px;"></p>
+                
+                <p><strong>🆘 긴급 탈출 버튼:</strong></p>
+                <p id="resultEmergencyBtn" style="margin-left: 15px;"></p>
+            </div>
+        </div>
+        
+        <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: 30px; border-radius: 12px; margin: 25px 0; text-align: center;">
+            <h3 style="color: #2c3e50; margin-bottom: 15px;">✍️ 서약</h3>
+            <p style="color: #2c3e50; margin: 10px 0;">나는 이 처방전을 93일간 복용할 것을 약속합니다</p>
+            <div style="font-size: 2em; font-weight: bold; color: #e74c3c; margin: 20px 0;" id="resultSignature"></div>
+        </div>
+        
+        <div style="background: #fff9e6; border: 2px solid #f39c12; border-radius: 12px; padding: 20px; margin: 25px 0; text-align: center;">
+            <h3 style="color: #f39c12; margin: 0 0 15px 0;">🌟 93일 프로젝트 시작!</h3>
+            <p style="color: #2c3e50; line-height: 1.8;">
+                좀비가 아닌 나로 살아가는 93일간의 여정이 시작되었습니다.<br>
+                완벽하지 않아도 괜찮아요. 조금씩 나아지면 됩니다.<br>
+                <strong>2025년 12월 31일, 더 나은 나로 만나요!</strong> 🌱
+            </p>
+        </div>
+        
+        <button class="btn btn-secondary" onclick="window.print()">📄 처방전 인쇄하기</button>
+        <button class="btn btn-primary" onclick="resetForm()">🔄 다시 작성하기</button>
+        
+        <div class="footer">
+            <p>📍 청년유니온 프리랜서 좀비 재활 센터</p>
+            <p style="font-size: 0.9em; color: #95a5a6;">D-93, 함께 인간으로 돌아가요 🌱</p>
+            <p style="font-size: 0.85em; color: #95a5a6; margin-top: 10px;">
+                이 처방전은 당신을 위한 것입니다. 누군가와 비교하지 마세요.<br>
+                당신만의 속도로, 당신만의 방법으로 천천히 회복해가면 됩니다.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let prescriptionData = {};
+        
+        function submitPrescription() {
+            // 데이터 수집
+            prescriptionData.name = document.getElementById('authorName').value || '이름 미입력';
+            
+            // 즉효성 치료제
+            prescriptionData.emergencyName = document.getElementById('emergencyName').value || '입력되지 않음';
+            prescriptionData.emergencyUsage = document.getElementById('emergencyUsage').value || '입력되지 않음';
+            
+            // 지속성 치료제
+            prescriptionData.morning = document.getElementById('morningDose').value || '입력되지 않음';
+            prescriptionData.lunch = document.getElementById('lunchDose').value || '입력되지 않음';
+            prescriptionData.evening = document.getElementById('eveningDose').value || '입력되지 않음';
+            
+            // 강화 치료제
+            prescriptionData.weeklyName = document.getElementById('weeklyName').value || '입력되지 않음';
+            prescriptionData.weeklySchedule = document.getElementById('weeklySchedule').value || '입력되지 않음';
+            prescriptionData.weeklyEffect = document.getElementById('weeklyEffect').value || '입력되지 않음';
+            
+            // 예방 백신
+            prescriptionData.boundary = document.getElementById('boundary').value || '입력되지 않음';
+            prescriptionData.warningSign = document.getElementById('warningSign').value || '입력되지 않음';
+            prescriptionData.emergencyButton = document.getElementById('emergencyButton').value || '입력되지 않음';
+            
+            // 서명
+            prescriptionData.signature = document.getElementById('signature').value || '서명 미입력';
+            
+            // 결과 표시
+            displayResult();
+        }
+        
+        function displayResult() {
+            // 이름
+            document.getElementById('resultName').textContent = prescriptionData.name + '님의 치료제 처방전';
+            
+            // 즉효성 치료제
+            document.getElementById('resultEmergencyName').textContent = '💊 ' + prescriptionData.emergencyName;
+            document.getElementById('resultEmergencyUsage').textContent = prescriptionData.emergencyUsage;
+            
+            // 지속성 치료제
+            document.getElementById('resultMorning').textContent = prescriptionData.morning;
+            document.getElementById('resultLunch').textContent = prescriptionData.lunch;
+            document.getElementById('resultEvening').textContent = prescriptionData.evening;
+            
+            // 강화 치료제
+            document.getElementById('resultWeeklyName').textContent = '💪 ' + prescriptionData.weeklyName;
+            document.getElementById('resultWeeklySchedule').textContent = prescriptionData.weeklySchedule;
+            document.getElementById('resultWeeklyEffect').textContent = prescriptionData.weeklyEffect;
+            
+            // 예방 백신
+            document.getElementById('resultBoundary').textContent = prescriptionData.boundary;
+            document.getElementById('resultWarning').textContent = prescriptionData.warningSign;
+            document.getElementById('resultEmergencyBtn').textContent = prescriptionData.emergencyButton;
+            
+            // 서명
+            document.getElementById('resultSignature').textContent = prescriptionData.signature;
+            
+            // 폼 숨기고 결과 표시
+            document.getElementById('prescriptionForm').classList.add('hidden');
+            document.getElementById('resultPage').classList.remove('hidden');
+            
+            // 맨 위로 스크롤
+            window.scrollTo(0, 0);
+        }
+        
+        function resetForm() {
+            document.getElementById('resultPage').classList.add('hidden');
+            document.getElementById('prescriptionForm').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
