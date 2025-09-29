@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>좀비 바이러스 문진표</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #333;
+        }
+        
+        .form-container, .result-container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 20px 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            border: 3px solid #e74c3c;
+        }
+        
+        .result-container {
+            border-color: #3498db;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #e74c3c;
+            padding-bottom: 20px;
+        }
+        
+        .result-header {
+            border-bottom-color: #3498db;
+        }
+        
+        .header h1 {
+            color: #e74c3c;
+            font-size: 2em;
+            margin: 0;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .result-header h1 {
+            color: #3498db;
+        }
+        
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        
+        .emoji-header {
+            font-size: 3em;
+            margin: 10px 0;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 15px;
+            background: #ecf0f1;
+            border-radius: 8px;
+        }
+        
+        .info-item {
+            flex: 1;
+        }
+        
+        .info-item label {
+            font-weight: bold;
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .info-item input {
+            width: 90%;
+            padding: 8px;
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .result-section {
+            border-left-color: #3498db;
+        }
+        
+        .section-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .result-title {
+            color: #3498db;
+        }
+        
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin: 15px 0;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #ecf0f1;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .checkbox-item:hover {
+            border-color: #e74c3c;
+            background: #fff5f5;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .checkbox-label {
+            flex: 1;
+        }
+        
+        .checkbox-label strong {
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 3px;
+        }
+        
+        .checkbox-label .description {
+            color: #7f8c8d;
+            font-size: 0.85em;
+        }
+        
+        .symptom-item {
+            margin: 10px 0;
+        }
+        
+        .symptom-item label {
+            font-weight: bold;
+            color: #34495e;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .symptom-item textarea {
+            width: 95%;
+            padding: 10px;
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            min-height: 60px;
+            font-family: inherit;
+            font-size: 0.95em;
+        }
+        
+        .severity-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .severity-option {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+        
+        .severity-option:hover {
+            border-color: #e74c3c;
+            transform: translateY(-2px);
+        }
+        
+        .severity-option.selected {
+            border-color: #e74c3c;
+            background: #fff5f5;
+        }
+        
+        .severity-option input[type="radio"] {
+            display: none;
+        }
+        
+        .severity-level {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+        
+        .daily-check {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin: 15px 0;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .warning-box strong {
+            color: #856404;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px 0;
+        }
+        
+        .btn-primary {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 6px 14px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin: 5px 5px 5px 0;
+            font-weight: 600;
+        }
+        
+        .badge.pattern {
+            background: #e67e22;
+        }
+        
+        .badge.severity-mild {
+            background: #2ecc71;
+            font-size: 1.2em;
+            padding: 10px 20px;
+        }
+        
+        .badge.severity-moderate {
+            background: #f39c12;
+            font-size: 1.2em;
+            padding: 10px 20px;
+        }
+        
+        .badge.severity-severe {
+            background: #e74c3c;
+            font-size: 1.2em;
+            padding: 10px 20px;
+        }
+        
+        .result-content {
+            color: #2c3e50;
+            line-height: 1.8;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .diary-box {
+            background: #fff9e6;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #f39c12;
+            margin: 15px 0;
+            font-style: italic;
+            color: #2c3e50;
+            line-height: 1.8;
+        }
+        
+        .goal-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.1em;
+            font-weight: 600;
+            line-height: 1.6;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+            color: #7f8c8d;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .form-container, .result-container {
+                box-shadow: none;
+            }
+            .btn {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .severity-options {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 문진표 폼 -->
+    <div id="questionnaireForm" class="form-container">
+        <div class="header">
+            <div class="emoji-header">🧟‍♂️🧟‍♀️</div>
+            <h1>좀비 바이러스 문진표</h1>
+            <div class="subtitle">Zombie Virus Medical Questionnaire</div>
+        </div>
+        
+        <div class="info-row">
+            <div class="info-item">
+                <label>환자명</label>
+                <input type="text" id="patientName" placeholder="이름을 입력하세요">
+            </div>
+            <div class="info-item">
+                <label>진단일</label>
+                <input type="text" value="2025.09.29" readonly>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">🦠 [ 감염 경로 체크 ]</div>
+            <p style="color: #7f8c8d; margin-bottom: 15px; font-size: 0.9em;">※ 해당되는 모든 항목에 체크하세요</p>
+            
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="virus1" value="💼 과로성 좀비 바이러스 (일중독형)">
+                    <div class="checkbox-label">
+                        <label for="virus1"><strong>💼 과로성 좀비 바이러스 (일중독형)</strong></label>
+                        <span class="description">증상: 밤낮없이 일, 주말 구분 불가, "일 안 하면 불안해" 증후군</span>
+                    </div>
+                </div>
+                
+                <div class="checkbox-item">
+                    <input type="checkbox" id="virus2" value="📱 디지털 좀비 바이러스 (무한스크롤형)">
+                    <div class="checkbox-label">
+                        <label for="virus2"><strong>📱 디지털 좀비 바이러스 (무한스크롤형)</strong></label>
+                        <span class="description">증상: SNS 무한루프, 넷플릭스 정주행, 새벽 2시까지 유튜브 시청</span>
+                    </div>
+                </div>
+                
+                <div class="checkbox-item">
+                    <input type="checkbox" id="virus3" value="🔋 번아웃 좀비 바이러스 (에너지고갈형)">
+                    <div class="checkbox-label">
+                        <label for="virus3"><strong>🔋 번아웃 좀비 바이러스 (에너지고갈형)</strong></label>
+                        <span class="description">증상: 만성피로, 의욕상실, "아무것도 하기 싫어" 상태 지속</span>
+                    </div>
+                </div>
+                
+                <div class="checkbox-item">
+                    <input type="checkbox" id="virus4" value="🎯 완벽주의 좀비 바이러스 (자기파괴형)">
+                    <div class="checkbox-label">
+                        <label for="virus4"><strong>🎯 완벽주의 좀비 바이러스 (자기파괴형)</strong></label>
+                        <span class="description">증상: 100점 아니면 0점, 끝없는 수정작업, 자기비난 무한반복</span>
+                    </div>
+                </div>
+                
+                <div class="checkbox-item">
+                    <input type="checkbox" id="virus5" value="💸 불안정 좀비 바이러스 (프리랜서형)">
+                    <div class="checkbox-label">
+                        <label for="virus5"><strong>💸 불안정 좀비 바이러스 (프리랜서형)</strong></label>
+                        <span class="description">증상: "다음 달 일 없을지도" 불안, 일단 다 받아, 마감에 시달림, 일 없으면 계속 불안</span>
+                    </div>
+                </div>
+                
+                <div class="checkbox-item">
+                    <input type="checkbox" id="virus6" value="👥 관계성 좀비 바이러스 (고립형)">
+                    <div class="checkbox-label">
+                        <label for="virus6"><strong>👥 관계성 좀비 바이러스 (고립형)</strong></label>
+                        <span class="description">증상: 혼자 작업, 사람 만나기 귀찮음, 연락 회피, "나 혼자 살래"</span>
+                    </div>
+                </div>
+                
+                <div class="checkbox-item">
+                    <input type="checkbox" id="virus7" value="⏰ 데드라인 좀비 바이러스 (시간추격형)">
+                    <div class="checkbox-label">
+                        <label for="virus7"><strong>⏰ 데드라인 좀비 바이러스 (시간추격형)</strong></label>
+                        <span class="description">증상: 항상 촉박, 벼락치기 생활화, 밤샘 당연시, "내일까지" 공포</span>
+                    </div>
+                </div>
+                
+                <div class="checkbox-item">
+                    <input type="checkbox" id="virus8">
+                    <div class="checkbox-label">
+                        <label for="virus8"><strong>🔄 기타 변종 바이러스</strong></label>
+                        <span class="description">직접 작성: <input type="text" id="virusOther" style="width: 60%; margin-left: 10px; border: none; border-bottom: 1px solid #ccc; padding: 3px;" placeholder="나만의 좀비 바이러스는?"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">🩺 [ 주요 증상 기록 ]</div>
+            <div class="symptom-item">
+                <label>🔸 신체적 증상</label>
+                <textarea id="physical" placeholder="예) 만성피로, 두통, 수면장애, 소화불량, 목/어깨 통증..."></textarea>
+            </div>
+            <div class="symptom-item">
+                <label>🔸 정신적 증상</label>
+                <textarea id="mental" placeholder="예) 집중력 저하, 불안, 우울, 의욕상실, 공허함, 번아웃..."></textarea>
+            </div>
+            <div class="symptom-item">
+                <label>🔸 사회적 증상</label>
+                <textarea id="social" placeholder="예) 사람 만나기 싫음, 연락 회피, 약속 취소, 혼자 있고 싶음..."></textarea>
+            </div>
+            <div class="symptom-item">
+                <label>🔸 행동적 증상</label>
+                <textarea id="behavioral" placeholder="예) 폭식/거식, 과음, 무한 스크롤, 미루기, 충동구매..."></textarea>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">📅 [ 좀비 생활 패턴 체크 ]</div>
+            <p style="color: #7f8c8d; margin-bottom: 15px; font-size: 0.9em;">최근 1주일 동안의 패턴을 체크하세요</p>
+            <div class="daily-check">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="pattern1" value="새벽 2시 이후 취침">
+                    <label for="pattern1">새벽 2시 이후 취침</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="pattern2" value="하루 8시간 이상 업무">
+                    <label for="pattern2">하루 8시간 이상 업무</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="pattern3" value="식사 거르기 3회 이상">
+                    <label for="pattern3">식사 거르기 3회 이상</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="pattern4" value="주말에도 일함">
+                    <label for="pattern4">주말에도 일함</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="pattern5" value="운동 0회">
+                    <label for="pattern5">운동 0회</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="pattern6" value="사람 안 만남">
+                    <label for="pattern6">사람 안 만남</label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">💭 [ 좀비 일기 ]</div>
+            <div class="symptom-item">
+                <label>최근 가장 좀비 같았던 순간을 구체적으로 기록해주세요</label>
+                <textarea id="zombieDiary" style="min-height: 100px;" placeholder="예) 3일 연속 밤샘 작업 후, 침대에서 일어나지도 못하고 노트북 들고 누워서 일했다. 뭘 먹었는지도 기억 안 나고, 친구 연락도 못 봤다. 그냥 데드라인만 보였다..."></textarea>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">🎯 [ 오늘의 목표 ]</div>
+            <div class="symptom-item">
+                <label>오늘 이 자리에 온 이유, 그리고 오늘만큼은 온전히 살아보겠다는 다짐을 적어주세요</label>
+                <textarea id="todayGoal" placeholder="예) 더 이상 좀비로 살고 싶지 않다. 오늘은 정말 여기, 이 순간에 집중하고 싶다."></textarea>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">📊 [ 중증도 평가 ]</div>
+            <div class="severity-options">
+                <div class="severity-option" onclick="selectSeverity('mild')">
+                    <input type="radio" name="severity" id="mild" value="경증">
+                    <label for="mild">
+                        <div class="severity-level">😊</div>
+                        <strong>경증</strong>
+                        <div style="font-size: 0.85em; color: #7f8c8d; margin-top: 5px;">가끔 좀비화<br>자연 회복 가능</div>
+                    </label>
+                </div>
+                <div class="severity-option" onclick="selectSeverity('moderate')">
+                    <input type="radio" name="severity" id="moderate" value="중등도">
+                    <label for="moderate">
+                        <div class="severity-level">😐</div>
+                        <strong>중등도</strong>
+                        <div style="font-size: 0.85em; color: #7f8c8d; margin-top: 5px;">자주 좀비화<br>의식적 노력 필요</div>
+                    </label>
+                </div>
+                <div class="severity-option" onclick="selectSeverity('severe')">
+                    <input type="radio" name="severity" id="severe" value="중증">
+                    <label for="severe">
+                        <div class="severity-level">😵</div>
+                        <strong>중증</strong>
+                        <div style="font-size: 0.85em; color: #7f8c8d; margin-top: 5px;">만성 좀비<br>집중 치료 필요</div>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="warning-box">
+            <strong>⚠️ 좀비에서 인간으로 돌아가는 법</strong>
+            <ul style="margin: 10px 0;">
+                <li>좀비화는 혼자만의 일이 아니에요. 오늘 이 자리에 온 우리 모두가 함께 겪고 있어요</li>
+                <li>중증이라고 해도 괜찮아요. 오늘 같이 치료제를 찾아볼 테니까요</li>
+                <li>중요한 건 '아, 나 지금 좀비 모드네'를 알아차리는 것. 그게 바로 치료의 시작이에요</li>
+                <li>오늘부터 D-93, 남은 날들 중 하루라도 더 온전히 살아봐요 🌱</li>
+            </ul>
+        </div>
+        
+        <button class="btn btn-primary" onclick="submitQuestionnaire()">진단 결과 보기 →</button>
+        
+        <div class="footer">
+            <p>📍 청년유니온 프리랜서 좀비 재활 센터</p>
+            <p style="font-size: 0.9em; color: #95a5a6;">우리 함께 인간으로 돌아가요 🌱</p>
+        </div>
+    </div>
+
+    <!-- 결과 페이지 -->
+    <div id="resultPage" class="result-container hidden">
+        <div class="header result-header">
+            <div class="emoji-header">📊✨</div>
+            <h1>진단 결과</h1>
+            <div class="subtitle">Your Zombie Diagnosis Result</div>
+        </div>
+        
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 12px; margin: 25px 0; text-align: center;">
+            <h2 style="margin: 0 0 10px 0; font-size: 1.8em;" id="resultName"></h2>
+            <div style="font-size: 0.9em; opacity: 0.9;">진단일: 2025.09.29 | D-93 프로젝트 시작</div>
+        </div>
+        
+        <div class="section result-section">
+            <div class="section-title result-title">🦠 감염된 좀비 바이러스</div>
+            <div class="result-content" id="resultViruses"></div>
+        </div>
+        
+        <div class="section result-section">
+            <div class="section-title result-title">🩺 주요 증상</div>
+            <div class="result-content">
+                <div style="margin: 15px 0;">
+                    <strong>🔸 신체적 증상</strong>
+                    <p id="resultPhysical" style="margin: 5px 0 15px 20px;"></p>
+                </div>
+                <div style="margin: 15px 0;">
+                    <strong>🔸 정신적 증상</strong>
+                    <p id="resultMental" style="margin: 5px 0 15px 20px;"></p>
+                </div>
+                <div style="margin: 15px 0;">
+                    <strong>🔸 사회적 증상</strong>
+                    <p id="resultSocial" style="margin: 5px 0 15px 20px;"></p>
+                </div>
+                <div style="margin: 15px 0;">
+                    <strong>🔸 행동적 증상</strong>
+                    <p id="resultBehavioral" style="margin: 5px 0 15px 20px;"></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section result-section">
+            <div class="section-title result-title">📅 좀비 생활 패턴</div>
+            <div class="result-content" id="resultPatterns"></div>
+        </div>
+        
+        <div class="section result-section">
+            <div class="section-title result-title">📊 중증도 평가</div>
+            <div style="text-align: center; padding: 20px;" id="resultSeverity"></div>
+        </div>
+        
+        <div class="section result-section">
+            <div class="section-title result-title">💭 좀비 일기</div>
+            <div class="diary-box" id="resultDiary"></div>
+        </div>
+        
+        <div class="section result-section">
+            <div class="section-title result-title">🎯 오늘의 다짐</div>
+            <div class="goal-box" id="resultGoal"></div>
+        </div>
+        
+        <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 12px; padding: 20px; margin: 25px 0; text-align: center;">
+            <h3 style="color: #856404; margin: 0 0 15px 0;">🌱 다음 단계</h3>
+            <p style="color: #856404; line-height: 1.8;">
+                진단이 완료되었습니다!<br>
+                이제 <strong>좀비 치료제 처방전</strong>을 작성하여<br>
+                93일간의 치료 계획을 세워보세요.
+            </p>
+        </div>
+        
+        <button class="btn btn-secondary" onclick="window.print()">📄 결과 인쇄하기</button>
+        <button class="btn btn-primary" onclick="resetForm()">🔄 다시 작성하기</button>
+        
+        <div class="footer">
+            <p>📍 청년유니온 프리랜서 좀비 재활 센터</p>
+            <p style="font-size: 0.9em; color: #95a5a6;">D-93, 함께 인간으로 돌아가요 🌱</p>
+        </div>
+    </div>
+
+    <script>
+        let formData = {};
+        
+        function selectSeverity(level) {
+            document.querySelectorAll('.severity-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            document.getElementById(level).closest('.severity-option').classList.add('selected');
+            document.getElementById(level).checked = true;
+        }
+        
+        function submitQuestionnaire() {
+            // 데이터 수집
+            formData.name = document.getElementById('patientName').value || '이름 미입력';
+            
+            // 바이러스 체크
+            formData.viruses = [];
+            for (let i = 1; i <= 7; i++) {
+                const checkbox = document.getElementById('virus' + i);
+                if (checkbox.checked) {
+                    formData.viruses.push(checkbox.value);
+                }
+            }
+            
+            // 기타 바이러스
+            const virus8 = document.getElementById('virus8');
+            const virusOther = document.getElementById('virusOther').value;
+            if (virus8.checked && virusOther) {
+                formData.viruses.push('🔄 ' + virusOther);
+            }
+            
+            // 증상
+            formData.physical = document.getElementById('physical').value || '입력되지 않음';
+            formData.mental = document.getElementById('mental').value || '입력되지 않음';
+            formData.social = document.getElementById('social').value || '입력되지 않음';
+            formData.behavioral = document.getElementById('behavioral').value || '입력되지 않음';
+            
+            // 패턴
+            formData.patterns = [];
+            for (let i = 1; i <= 6; i++) {
+                const checkbox = document.getElementById('pattern' + i);
+                if (checkbox.checked) {
+                    formData.patterns.push(checkbox.value);
+                }
+            }
+            
+            // 중증도
+            const severityChecked = document.querySelector('input[name="severity"]:checked');
+            formData.severity = severityChecked ? severityChecked.value : '미선택';
+            
+            // 일기와 목표
+            formData.diary = document.getElementById('zombieDiary').value || '입력되지 않음';
+            formData.goal = document.getElementById('todayGoal').value || '입력되지 않음';
+            
+            // 결과 표시
+            displayResult();
+        }
+        
+        function displayResult() {
+            // 이름
+            document.getElementById('resultName').textContent = formData.name + '님의 진단 결과';
+            
+            // 바이러스
+            const virusesHTML = formData.viruses.length > 0 
+                ? formData.viruses.map(v => `<span class="badge">${v}</span>`).join('')
+                : '<p style="color: #7f8c8d;">체크된 바이러스가 없습니다</p>';
+            document.getElementById('resultViruses').innerHTML = virusesHTML;
+            
+            // 증상
+            document.getElementById('resultPhysical').textContent = formData.physical;
+            document.getElementById('resultMental').textContent = formData.mental;
+            document.getElementById('resultSocial').textContent = formData.social;
+            document.getElementById('resultBehavioral').textContent = formData.behavioral;
+            
+            // 패턴
+            const patternsHTML = formData.patterns.length > 0
+                ? formData.patterns.map(p => `<span class="badge pattern">${p}</span>`).join('')
+                : '<p style="color: #7f8c8d;">체크된 패턴이 없습니다</p>';
+            document.getElementById('resultPatterns').innerHTML = patternsHTML;
+            
+            // 중증도
+            let severityHTML = '';
+            if (formData.severity === '경증') {
+                severityHTML = '<span class="badge severity-mild">😊 경증 - 가끔 좀비화, 자연 회복 가능</span>';
+            } else if (formData.severity === '중등도') {
+                severityHTML = '<span class="badge severity-moderate">😐 중등도 - 자주 좀비화, 의식적 노력 필요</span>';
+            } else if (formData.severity === '중증') {
+                severityHTML = '<span class="badge severity-severe">😵 중증 - 만성 좀비, 집중 치료 필요</span>';
+            } else {
+                severityHTML = '<p style="color: #7f8c8d;">중증도가 선택되지 않았습니다</p>';
+            }
+            document.getElementById('resultSeverity').innerHTML = severityHTML;
+            
+            // 일기
+            document.getElementById('resultDiary').textContent = formData.diary;
+            
+            // 목표
+            document.getElementById('resultGoal').textContent = formData.goal;
+            
+            // 폼 숨기고 결과 표시
+            document.getElementById('questionnaireForm').classList.add('hidden');
+            document.getElementById('resultPage').classList.remove('hidden');
+            
+            // 맨 위로 스크롤
+            window.scrollTo(0, 0);
+        }
+        
+        function resetForm() {
+            document.getElementById('resultPage').classList.add('hidden');
+            document.getElementById('questionnaireForm').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
